@@ -1,0 +1,116 @@
+---
+import { Store } from "@lucide/astro";
+import Card from "./Card.astro";
+import BaseLayout from "../BaseLayout.astro";
+import { type CardProps } from "./Card.astro";
+import { APP_NAME } from "@/config/app";
+import { Pathname } from "../../config/Pathname";
+
+interface Props {
+  title: string;
+
+  description: string;
+
+  cards?: [CardProps, CardProps, CardProps];
+}
+
+const { title, description, cards } = Astro.props;
+
+const currentPath = Astro.request.url;
+
+const isInContact = currentPath.includes(Pathname.CONTACT);
+---
+
+<BaseLayout>
+  <div class='min-h-screen flex'>
+    <!-- Left side - Hero section with image and content -->
+    <div
+      class='hidden lg:flex lg:w-[70%] bg-linear-to-br from-primary via-primary/90 to-primary/80 relative overflow-hidden'
+    >
+      <!-- Background pattern -->
+      <div class='absolute inset-0 opacity-10'>
+        <div
+          class='absolute top-20 left-20 w-72 h-72 bg-white rounded-full blur-3xl'
+        >
+        </div>
+        <div
+          class='absolute bottom-20 right-20 w-96 h-96 bg-white rounded-full blur-3xl'
+        >
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div
+        class='relative z-10 flex flex-col justify-around p-12 text-white w-full'
+      >
+        <!-- Logo/Brand -->
+        <div class='flex items-center justify-between'>
+          <div class='flex items-center gap-3'>
+            <div
+              class='w-10 h-10 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center'
+            >
+              <Store class='w-6 h-6' />
+            </div>
+            <span class='text-2xl font-bold'>{APP_NAME}</span>
+          </div>
+
+          {
+            !isInContact && (
+              <a
+                href={Pathname.CONTACT}
+                class='text-white/90 hover:text-white transition-colors hover:underline duration-200 text-sm font-medium'
+              >
+                Contacto
+              </a>
+            )
+          }
+
+          {
+            isInContact && (
+              <a
+                href={Pathname.BUSINESS_DASHBOARD}
+                class='text-white/90 hover:text-white transition-colors hover:underline duration-200 text-sm font-medium'
+              >
+                Ir al Inicio
+              </a>
+            )
+          }
+        </div>
+
+        <!-- Main content -->
+        <div class='max-w-2xl'>
+          <h1 class='text-5xl font-bold mb-6 leading-tight text-balance'>
+            {title}
+          </h1>
+          <p class='text-xl text-white/90 mb-12 leading-relaxed'>
+            {description}
+          </p>
+
+          <!-- Feature cards -->
+          {
+            cards && (
+              <div class='grid grid-cols-3 gap-4'>
+                {cards.map((c) => (
+                  <Card
+                    icon={c.icon}
+                    title={c.title}
+                    description={c.description}
+                  />
+                ))}
+              </div>
+            )
+          }
+
+          <slot name='extraContent' />
+        </div>
+      </div>
+    </div>
+
+    <!-- Right side - Registration form (slot) -->
+    <div
+      class='w-full lg:w-[30%] flex items-center justify-center p-8 bg-background'
+    >
+      <slot />
+    </div>
+  </div>
+</BaseLayout>
